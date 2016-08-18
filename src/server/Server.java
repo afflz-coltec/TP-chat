@@ -34,8 +34,8 @@ public class Server {
             System.out.println("Nova conexão com o cliente "
                     + cliente.getInetAddress().getHostAddress()
             );
-            
-            User newbee = new User(cliente);
+
+            User newbee = new User(cliente, this);
 
             this.clientes.add(newbee);
 
@@ -44,10 +44,26 @@ public class Server {
 
     }
 
-//    public void distribuiMensagem(String msg) {
-//        // envia msg para todo mundo
-//        for (PrintStream cliente : this.clientes) {
-//            cliente.println(msg);
-//        }
-//    }
+    public void global_message(String message,String user) {
+        for (User cliente : this.clientes) {
+            cliente.inbox(message,user);
+        }
+    }
+    public String onlinow(){
+        String online = "\n";
+        for (User cliente : this.clientes) {
+          online+=cliente.nick;
+          online+="\n";
+        }
+        return online;
+    }
+
+    public void private_message(String message,String user, String snick) {
+        for (User cliente : this.clientes) {
+            if (cliente.nick.equals(snick)) {
+                cliente.inbox(message,user);
+                break;
+            }
+        }
+    }
 }
