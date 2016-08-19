@@ -20,8 +20,11 @@ import java.util.Scanner;
  */
 public class User implements Runnable {
 
+    String message;
+    boolean die;
+
     Server servidor;
-    
+
     InputStream IS;
     OutputStream OS;
 
@@ -32,6 +35,8 @@ public class User implements Runnable {
     static List<String> global_nicks = new ArrayList<>();
     static int global_id = 0;
     int id;
+    Thread thd;
+    private boolean bye_bye = true;
 
     User(Socket newbee, Server conectado) throws IOException {
         IS = newbee.getInputStream();
@@ -43,13 +48,22 @@ public class User implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("dsflsdka");
         while (true) {
-            String service = cliente_in.nextLine();
+            String service = "";
+            
+            System.out.println(""
+                    + "jkfsadlfhlaskjfhlakjfhlaskjh");
+
+            if (cliente_in.hasNextLine()) {
+                service = cliente_in.nextLine();
+            }
+            System.out.println(service);
 
             switch (service) {
                 case "hello":
                     if (this.state.equals("offline")) {
-                        boolean die = false;
+                        die = false;
 
                         response("Hello aceito");
                         String temp_nick = cliente_in.nextLine();
@@ -65,45 +79,98 @@ public class User implements Runnable {
                             global_nicks.add(nick);
                             global_id++;
                             id = global_id;
-                            state = "logged";
+                            state = "online";
 
                             response("Hello " + temp_nick + "! Seu ID é: " + id);
                         }
-                    }
-                    else{
+                    } else {
                         response("Você já está logado...");
                     }
                     break;
                 case "changenick":
+                    if (this.state.equals("online")) {
+                        die = false;
+
+                        String temp_nick = cliente_in.nextLine();
+                        String exnick = this.nick;
+                        for (String gn : User.global_nicks) {
+                            if (temp_nick.equals(gn)) {
+                                response("deny");
+                                die = true;
+                                break;
+                            }
+                        }
+                        if (!die) {
+                            nick = temp_nick;
+                            global_nicks.add(nick);
+                            global_id++;
+                            id = global_id;
+                            state = "online";
+
+                            response("Seu novo nick é " + temp_nick);
+                            servidor.service_message(exnick + " agora atende por " + this.nick);
+                        }
+                    }
                     break;
-                case "onlinenow":
-                    response("Estes aqui estão online:"+servidor.onlinow());
+                case "onlinow":
+                    if (this.state.equals("online")) {
+                        onlinow(servidor.onlinow());
+                    }
                     break;
                 case "getnick":
+                    if (this.state.equals("online")) {
+                    }
                     break;
                 case "privatemsg":
+                    if (this.state.equals("online")) {
+                        String recipient = cliente_in.nextLine();
+                        message = cliente_in.nextLine();
+                        servidor.private_message(message, this.nick, recipient);
+                    }
                     break;
                 case "globalmsg":
-                    String message = cliente_in.nextLine();
-                    servidor.global_message(message,this.nick);
+                    if (this.state.equals("online")) {
+                        message = cliente_in.nextLine();
+                        System.out.println(message);
+                        servidor.global_message(message, this.nick);
+                    }
                     break;
                 case "privatefile":
+                    if (this.state.equals("online")) {
+                    }
                     break;
                 case "globalfile":
+                    if (this.state.equals("online")) {
+                    }
                     break;
                 case "byebye":
+                    if (this.state.equals("online")) {
+                        this.state = "offline";
+                        this.bye_bye = false;
+                        servidor.user_bye(this);
+                        this.thd.stop();
+                    }
                     break;
             }
         }
     }
 
     private synchronized void response(String resp) {
-        cliente_out.print("technical:");
+        cliente_out.println("technical");
         cliente_out.println(resp);
     }
-    synchronized void inbox (String msg,String user){
-        cliente_out.print("Message from "+user+":");
+
+    synchronized void inbox(String msg, String user) {
+        cliente_out.println("message");
+        cliente_out.print("Message from " + user + ":");
         cliente_out.println(msg);
     }
 
+    synchronized void inbox(String msg) {
+        cliente_out.println(msg);
+    }
+
+    private void onlinow(String onlinow) {
+        cliente_out.println(onlinow);
+    }
 }

@@ -39,29 +39,43 @@ public class Server {
 
             this.clientes.add(newbee);
 
-            new Thread(newbee).start();
+            newbee.thd = new Thread(newbee);
+            newbee.thd.start();
         }
 
     }
 
-    public void global_message(String message,String user) {
+    public void service_message(String message) {
         for (User cliente : this.clientes) {
-            cliente.inbox(message,user);
+            cliente.inbox(message);
         }
     }
-    public String onlinow(){
-        String online = "\n";
+    public void user_bye(User bye) {
+        
+        this.clientes.remove(bye);
+        bye.thd.interrupt();
+    }
+
+    public void global_message(String message, String user) {
         for (User cliente : this.clientes) {
-          online+=cliente.nick;
-          online+="\n";
+            if (cliente.state.equals("online"));
+            cliente.inbox(message, user);
+        }
+    }
+
+    public String onlinow() {
+        String online = "";
+        for (User cliente : this.clientes) {
+            online += "onlinow\n" + cliente.nick + "\n";
+
         }
         return online;
     }
 
-    public void private_message(String message,String user, String snick) {
+    public void private_message(String message, String user, String snick) {
         for (User cliente : this.clientes) {
             if (cliente.nick.equals(snick)) {
-                cliente.inbox(message,user);
+                cliente.inbox(message, user);
                 break;
             }
         }
