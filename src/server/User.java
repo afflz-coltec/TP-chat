@@ -48,13 +48,9 @@ public class User implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("dsflsdka");
         while (true) {
             String service = "";
             
-            System.out.println(""
-                    + "jkfsadlfhlaskjfhlakjfhlaskjh");
-
             if (cliente_in.hasNextLine()) {
                 service = cliente_in.nextLine();
             }
@@ -148,7 +144,8 @@ public class User implements Runnable {
                         this.state = "offline";
                         this.bye_bye = false;
                         servidor.user_bye(this);
-                        this.thd.stop();
+                        this.thd.interrupt();
+                        User.global_nicks.remove(this.nick);
                     }
                     break;
             }
@@ -171,6 +168,7 @@ public class User implements Runnable {
     }
 
     private void onlinow(String onlinow) {
+        cliente_out.println("onlinow");
         cliente_out.println(onlinow);
     }
 }

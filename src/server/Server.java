@@ -66,8 +66,8 @@ public class Server {
     public String onlinow() {
         String online = "";
         for (User cliente : this.clientes) {
-            online += "onlinow\n" + cliente.nick + "\n";
-
+            System.out.println(cliente.nick);
+            online += cliente.nick + "\t";
         }
         return online;
     }

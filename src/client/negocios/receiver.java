@@ -32,13 +32,18 @@ public class receiver implements Runnable {
         while (true) {
             if (s.hasNextLine()) {
                 String type = s.nextLine();
-                System.out.println(type);
                 switch (type) {
                     case "message":
                         ui.message_send(s.nextLine());
                         break;
                     case "onlinow":
-                        ui.onlinow_send(s.nextLine());
+                        boolean gogo = true;
+
+                        String entry = s.nextLine();
+                        entry.replaceAll("\n", "\t");
+
+                        System.out.println(entry);
+                        ui.onlinow_send(entry);
                         break;
                     case "technical":
                         System.out.println(s.nextLine());

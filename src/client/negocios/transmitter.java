@@ -21,7 +21,7 @@ public class transmitter implements Runnable {
         s = new PrintStream(this.servidor);
         System.out.println("OPEN TX");
         s.println("hello");
-        s.println("itme");
+        s.println("itssme");
     }
 
     public synchronized void send(String msg) {
@@ -41,7 +41,6 @@ public class transmitter implements Runnable {
                     cache = "";
                 }
             } catch (InterruptedException ex) {
-                Logger.getLogger(transmitter.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
